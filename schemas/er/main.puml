@@ -1,0 +1,47 @@
+@startuml
+
+title ER-диаграма БД основной системы Warmhouse
+
+'skinparam linetype ortho
+
+' Сущности и их атрибуты
+entity "User" {
+  *id : Int <<PK>>
+  --
+  login: VARCHAR
+  password: VARCHAR
+  name : VARCHAR
+  email : VARCHAR
+  phone : VARCHAR
+}
+
+entity "House" {
+  *id : Int <<PK>>
+  --
+  user_id : VARCHAR <<FK>>
+  name : VARCHAR
+  address : VARCHAR
+}
+User ||--o{ House : владеет
+
+entity "Device" {
+  *id : Int <<PK>>
+  --
+  house_id : Int <<FK>>
+  type_id : VARCHAR <<FK>>
+  name : VARCHAR
+  serial_number : VARCHAR
+  url: VARCHAR
+  enabled : bool
+}
+House ||--o{ Device : располагается
+
+entity "DeviceType" {
+  *id : VARCHAR <<PK>>
+  --
+  model : VARCHAR
+  settings: JSON
+}
+DeviceType ||--o{ Device : является
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+title Диаграмма контекста текущей системы "Тёплый дом"
+
+top to bottom direction
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(client, "Пользователь", "Пользователь системы 'Тёплый дом'")
+
+System(warmhouse, "Система 'Теплый Дом'", "Управление умными устройствами объектов пользователя")
+
+System_Ext(temp_devices, "Устройства управления климатом", "Показания текущей температуры,  вкл/выкл отопления")
+System_Ext(light_devices, "Устройства управления светом", "Состояние реле, вкл/выкл реле")
+System_Ext(gate_devices, "Устройства управления воротами", "Положение ворот, запуск привода ворот")
+System_Ext(cameras, "Видеокамеры", "Наблюдение за обстановкой, датчики движения")
+
+Rel(client, warmhouse, "Использует систему")
+Rel(warmhouse, temp_devices, "Передаёт команды, опрашивает состояние")
+Rel(temp_devices, warmhouse, "События")
+Rel(warmhouse, light_devices, "Передаёт команды, запрашивает состояние")
+Rel(light_devices, warmhouse, "События")
+Rel(warmhouse, gate_devices, "Передаёт команды, запрашивает состояние")
+Rel(gate_devices, warmhouse, "События")
+Rel(warmhouse, cameras, "Запрашивает передачу видеотрафика")
+Rel(cameras, warmhouse, "Срабатывание датчика движения, снимки кадров")
+
+@enduml
