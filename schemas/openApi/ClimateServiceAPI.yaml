@@ -1,0 +1,187 @@
+openapi: 3.0.3
+info:
+  title: API подсистемы управления климатом
+  description: RESTful API для взаимодействия с устройствами управления температурой системы "Умный дом"
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Локальный сервер
+components:
+
+  schemas:
+    TemperatureValue:
+      type: object
+      description: Значение температуры в градусах Цельсия
+      properties:
+        value:
+          type: number
+
+    Device:
+      type: object
+      properties:
+        id:
+          type: string
+        type_id:
+          type: string
+        name:
+          type: string
+        serial_number:
+          type: string
+        url:
+          type: string
+        enabled:
+          type: boolean
+      required:
+        - id
+        - type_id
+        - url
+
+paths:
+
+  /temperature/{device_id}:
+
+    get:
+      summary: Получить текущую температуру с устройства device_id
+      tags:
+        - ClimateControl
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Идентификатор устройства
+      responses:
+        '200':
+          description: Температура на устройcтве
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemperatureValue'
+        '404':
+          description: Устройство device_id не существует
+        '500':
+          description: Внутренняя ошибка сервиса
+
+    post:
+      summary: Задать желаемую температуру, контролируемую устройством device_id
+      tags:
+        - ClimateControl
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Идентификатор устройства
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemperatureValue'
+      responses:
+        '201':
+          description: Температура на устройcтве успешно задана
+        '400':
+          description: Значение температуры некорректно либо отсутствует
+        '404':
+          description: Устройство device_id не существует
+        '500':
+          description: Внутренняя ошибка сервиса
+
+  /devices:
+
+    post:
+      summary: Зарегистрировать (создать) новое устройство
+      tags:
+        - DeviceControl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '201':
+          description: Устройство создано
+        '400':
+          description: Неверный запрос
+        '500':
+          description: Внутренняя ошибка сервера
+
+  /devices/{device_id}:
+
+    get:
+      summary: Получить информацию об устройстве
+      tags:
+        - DeviceControl
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Идентификатор устройства
+      responses:
+        '200':
+          description: Объект с информацией об устройстве
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '404':
+          description: Устройство device_id не существует
+        '500':
+          description: Внутренняя ошибка сервиса
+
+    put:
+      summary: Обновить информацию об устройстве
+      tags:
+        - DeviceControl
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Идентификатор устройства
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      responses:
+        '200':
+          description: Операция выполнена успешно
+        '400':
+          description: Неверный запрос
+        '404':
+          description: Устройство device_id не существует
+        '500':
+          description: Внутренняя ошибка сервера
+
+
+    delete:
+      summary: Удалить устройство
+      tags:
+        - DeviceControl
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Идентификатор устройства
+      responses:
+        '200':
+          description: Операция выполнена успешно
+        '400':
+          description: Неверный запрос
+        '404':
+          description: Устройство device_id не существует
+        '500':
+          description: Внутренняя ошибка сервера
+
+

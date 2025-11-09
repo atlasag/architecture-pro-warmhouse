@@ -1,0 +1,56 @@
+@startuml
+
+title Диаграмма контейнеров будущей системы "Тёплый дом"
+
+top to bottom direction
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(client, "Пользователь", "Пользователь системы 'Тёплый дом'")
+
+' Ядро системы
+System_Boundary(warmhouse, "Система 'Теплый Дом'", "Управление умными устройствами объектов пользователя") {
+    Container(web, "Web-приложение", "Golang", "Визуализация личного кабинета на сайте")
+    Container(mobile, "Мобильное приложение", "Android/iOS", "Обеспечивает управление со смартфона")
+    ContainerDb(main_db, "БД", "PostgreSQL", "Информация о пользователях, зданиях и устройствах")
+    Container(api_server, "API-приложение", "Golang", "Основная бизнес-логика, ")
+}
+
+Rel(client, web, "Заходит на сайт")
+Rel(client, mobile, "Использует мобильное приложение")
+Rel(web, api_server, "Запрашивает/изменяет данные", http REST)
+Rel(mobile, api_server, "Запрашивает/изменяет данные", http REST)
+Rel(api_server, main_db,"Чтение/запись", SQL)
+
+' Сервис управления климатом
+System_Boundary(temp_container, "Подсистема управления климатом") {
+    Container(temp_service, "Сервис управления климатом", "Golang", "Обеспечивает двустороннюю связь с устройствами управления климатом")
+    ContainerDb(temp_db, "БД устройств управления климатом", "PostgreSQL", "Настройки устройств, история команд и событий")
+    ContainerQueue(temp_queue, "Очередь событий", "Kafka или PostgreSQL", "События, произошедшие на устройствах")
+}
+System_Ext(temp_devices, "Устройства управления климатом", "Показания текущей температуры,  вкл/выкл отопления")
+
+Rel(api_server, temp_service,"Синхронные команды и запросы по ID устройства", http REST)
+Rel(temp_service, temp_db, "Чтение/запись", SQL)
+Rel_R(temp_service, temp_queue, "Сохранение событий, о которых нужно уведомлять пользователей")
+Rel(temp_queue, api_server, "Подписка на новые события устройств")
+
+Rel(temp_devices, temp_service, "События")
+Rel(temp_service, temp_devices, "Передаёт команды, опрашивает состояние")
+
+' Сервис управления светом
+System_Boundary(light_container, "Подсистема управления светом", "", "", "Структура аналогична управлению климатом") {
+}
+BiRel(api_server, light_container,"")
+
+' Сервис управления воротами
+System_Boundary(gate_container, "Подсистема управления воротами", "", "", "Структура аналогична управлению климатом") {
+}
+BiRel(api_server, gate_container,"")
+
+' Сервис управления видеонаблюдением
+System_Boundary(video_container, "Подсистема управления видеонаблюдением", "", "", "Структура аналогична управлению климатом") {
+}
+BiRel(api_server, video_container,"")
+
+@enduml

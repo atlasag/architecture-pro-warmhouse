@@ -1,0 +1,47 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class ClimateController {
+    + httpResponse getCurrentTemperature(int device_id)
+    + httpResponse setTemperature(int device_id, string value)
+}
+
+interface IEventHandler {
+   + void handleEvent(Event event)
+}
+
+class ClimateService {
+    - ClimateRepository climateRepository
+    - ClimateAdapter climateAdapter
+
+    - void storeCapturedTemperature(int device_id, string value)
+    + float getCurrentTemperature(int device_id)
+    + void setTemperature(int device_id, string value)
+    + void handleEvent(Event event)
+}
+ClimateController --> ClimateService: Использует
+IEventHandler <|.. ClimateService: имплементирует интерфейс
+
+class ClimateAdapter {
+   + string getValue(int deviceId)
+   + void setTemperature(int device_id, string value)
+}
+ClimateService --> ClimateAdapter: Вызывает
+
+class EventListener {
+   - IEventHandler climateService
+   - IEventHandler lightService
+   - IEventHandler gateService
+   - IEventHandler videoService
+   + void listen()
+}
+EventListener -> ClimateService: "Вызывает handleEvent(Event event)"
+IEventHandler *-- EventListener: композиция
+
+class ClimateRepository {
+    + void storeTemperature(int device_id, string value, timestamp capturedAt)
+    + array getLog(int device_id)
+}
+ClimateService --> ClimateRepository: Вызывает
+
+@enduml
