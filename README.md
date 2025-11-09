@@ -119,11 +119,13 @@
 
 **Диаграмма компонентов (Components)**
 
-Добавьте диаграмму для каждого из выделенных микросервисов.
+[./schemas/c4/3-components/components.puml](./schemas/c4/3-components/components.puml)
+![/schemas/c4/2-containers/components.png](./schemas/c4/3-components/components.png "Диаграмма компонентов")
 
 **Диаграмма кода (Code)**
 
-Добавьте одну диаграмму или несколько.
+[./schemas/c4/4-code/code.puml](./schemas/c4/4-code/code.puml)
+![/schemas/c4/4-code/code.png](./schemas/c4/4-code/code.png "Диаграмма кода")
 
 # Задание 3. Разработка ER-диаграммы
 

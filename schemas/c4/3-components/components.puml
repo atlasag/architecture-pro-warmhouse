@@ -1,0 +1,49 @@
+@startuml
+!include https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+title C4 — Диаграмма компонентов для контейнера "API-приложение"
+
+Container_Boundary(api_server, "API-приложение") {
+    Component(AuthController, "AuthController", "Аутентификация и авторизация пользователей")
+    Component(UserController, "UserController", "Редактирование профилей пользователей")
+    Component(DeviceManagementController, "DeviceManagementController", "Привязка устройств к пользователям")
+
+    Component(ClimateController, ClimateController, "Управление климатом")
+    Component(GateController, GateController, "Управление воротами")
+    Component(VideoController, VideoController, "Управление видеонаблюдением")
+    Component(LightsController, LightsController, "Управление освещением")
+
+    Component(ServiceLayer, ServiceLayer, "Сервисы бизнес-логики")
+    Component(ClimateAdapter, ClimateAdapter, "Адаптер подсистем управления климатом")
+    Component(GateAdapter, GateAdapter, "Адаптер подсистем управления воротами")
+    Component(RepositoryLayer, RepositoryLayer, "Связь с БД")
+
+    Component(EventListener, "Event Listener", "Слушает события из Kafka")
+}
+
+Component_Ext(temp_service, "Подсистема управления климатом")
+Component_Ext(gate_service, "Подсистема управления воротами")
+ComponentDb_Ext(DB, "БД", "PostgreSQL", "Информация о пользователях, зданиях и устройствах")
+
+Rel(AuthController,ServiceLayer,"Вызывает функции авторизации")
+Rel(UserController,ServiceLayer,"Вызывает функции редактирования профиля")
+Rel(DeviceManagementController,ServiceLayer,"Вызывает функции регистрации устройств")
+Rel(ClimateController,ServiceLayer,"Задание и чтение температуры")
+Rel(GateController,ServiceLayer,"Привод и состояние ворот")
+Rel(LightsController,ServiceLayer,"Вкл/выкл освещения")
+Rel(VideoController,ServiceLayer,"Управление видеонаблюдением")
+
+Rel(ServiceLayer, RepositoryLayer, "Читает и записывает данные")
+Rel(ServiceLayer, ClimateAdapter, "Синхронно читает и записывает данные")
+Rel(ServiceLayer, GateAdapter, "Синхронно читает и записывает данные")
+
+Rel(ClimateAdapter, temp_service, "")
+Rel(GateAdapter, gate_service, "")
+Rel(temp_service, EventListener, "")
+Rel(gate_service, EventListener, "")
+
+Rel_Up(EventListener, ServiceLayer, "События, произошедшие на устройствах")
+
+Rel(RepositoryLayer, DB, "Читает и записывает данные")
+
+@enduml
